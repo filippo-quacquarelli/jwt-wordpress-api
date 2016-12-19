@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <!--
+        Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
+        For details, see http://go.microsoft.com/fwlink/?LinkID=617521
+    -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://www.domain.tld; media-src *">
+        
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>BlankCordovaApp2</title>
+    </head>
+    <body>
+        <div class="container">
+            <!--<button id="token">get token</button>-->
+            <div class="getPost" id="getPost"></div>
+
+            <div class="container-wpInsertPost" id="container-wpInsertPost">
+                <div class="titleNewPost" id="titleNewPost">Nuovo articolo</div>
+
+                <form id="wpInsertPost">
+                    <input type="text" name="title" placeholder="titolo" required>
+                    <textarea name="content"></textarea>
+                    <button type="submit" class="btn-submit btn-default btn-positive">Pubblica <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                </form>
+            </div>
+
+            <div id="app-notification" class="app-notification"><i class="fa fa-times remove-notification" aria-hidden="true"></i></div>
+        </div>
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="scripts/platformOverrides.js"></script>
+        <script type="text/javascript" src="scripts/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="scripts/index.js"></script>
+    </body>
+</html>
