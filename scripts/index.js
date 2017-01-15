@@ -7,10 +7,61 @@
 
     document.addEventListener('deviceready', onDeviceReady.bind(this), false);
 
-    function renderPost(token, getPost) {
+    var token = window.localStorage.getItem("token");
 
+    function getToken(domain, username, password) {
+        
         $.ajax({
-            url: 'http://www.domain.tld/wp-json/wp/v2/posts',
+            async: false,
+            url: domain + '/wp-json/jwt-auth/v1/token',
+            data: {
+                username: username,
+                password: password
+            },
+            type: 'POST',
+            success: function (data) {
+                window.localStorage.setItem("token", data.token);
+
+                token = window.localStorage.getItem("token");
+
+                onDeviceReady();
+            },
+            error: function (data) {
+                appNotification(data.responseJSON.message, true);
+            }
+        });
+
+        return token;
+    }
+
+    function getForm(form) {
+        form.on("submit", function (event) {
+            event.preventDefault();
+
+            var domain,
+                username,
+                password;
+
+            var elemForm = $(this).serializeArray();
+            var elemFormToObject = $.extend({}, elemForm);
+
+            for (var prop in elemFormToObject) {
+                if (elemFormToObject[prop].name == 'domain')    domain   = elemFormToObject[prop].value;
+                if (elemFormToObject[prop].name == 'username')  username = elemFormToObject[prop].value;
+                if (elemFormToObject[prop].name == 'password')  password = elemFormToObject[prop].value;
+            }
+               
+            if (domain && username && password) {
+                getToken(domain, username, password);
+            } else {
+                appNotification("Riempi tutti i campi");
+            }
+        });
+    }
+
+    function renderPost(token, getPost) {
+        $.ajax({
+            url: 'http://www.kessydish.com/wprest/wp-json/wp/v2/posts',
             beforeSend: function (request) {
                 request.setRequestHeader('Authorization', 'Bearer ' + token);
             },
@@ -57,7 +108,7 @@
             }
 
             $.ajax({
-                url: 'http://www.domain.tld/wp-json/wp/v2/posts',
+                url: 'http://www.kessydish.com/wprest/wp-json/wp/v2/posts',
                 beforeSend: function (request) {
                     request.setRequestHeader('Authorization', 'Bearer ' + token);
                 },
@@ -77,7 +128,7 @@
             var id = $(this).parent().attr('id');
 
             $.ajax({
-                url: 'http://www.domain.tld/wp-json/wp/v2/posts/'+id,
+                url: 'http://www.kessydish.com/wprest/wp-json/wp/v2/posts/'+id,
                 beforeSend: function (request) {
                     request.setRequestHeader('Authorization', 'Bearer ' + token);
                 },
@@ -118,7 +169,7 @@
                 if (newTitle || newContent) {
                     
                     $.ajax({
-                        url: 'http://www.domain.tld/wp-json/wp/v2/posts/' + id,
+                        url: 'http://www.kessydish.com/wprest/wp-json/wp/v2/posts/' + id,
                         beforeSend: function (request) {
                             request.setRequestHeader('Authorization', 'Bearer ' + token);
                         },
@@ -130,7 +181,6 @@
                     });
 
                 } else {
-                    //$('#app-notification').addClass('visible').append('Riempi almeno uno dei due campi o annulla l\'operazione');
                     appNotification('Riempi almeno uno dei due campi o annulla l\'operazione');
                 }
                 
@@ -144,7 +194,8 @@
         });
     }
 
-    function appNotification(message) {
+    function appNotification(message, disableLink) {
+        
         var appNotification = $('#app-notification');
 
         appNotification.addClass('visible').append(message);
@@ -153,30 +204,32 @@
             e.preventDefault();
 
             appNotification.removeClass('visible');
+            appNotification.empty().append('<i class="fa fa-times remove-notification" aria-hidden="true"></i>');
         });
+
+        if (disableLink) {
+            appNotification.find('a').click(function (e) {
+                e.preventDefault();
+            });
+        }
     }
 
     function onDeviceReady() {
         // Handle the Cordova pause and resume events
         document.addEventListener( 'pause', onPause.bind( this ), false );
-        document.addEventListener('resume', onResume.bind(this), false);
+        document.addEventListener( 'resume', onResume.bind(this), false );
 
-        var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC93d3cua2Vzc3lkaXNoLmNvbVwvd3ByZXN0IiwiaWF0IjoxNDgxODM2MzA2LCJuYmYiOjE0ODE4MzYzMDYsImV4cCI6MTQ4MjQ0MTEwNiwiZGF0YSI6eyJ1c2VyIjp7ImlkIjoiMSJ9fX0.m16HuQZqm0GKK22UvEn-FmRNjAFRbYagtThOunvhAPU';
-        
-        $('#token').click(function (e) {
-            e.preventDefault();
+        getForm($('#auth'));
 
-            $.ajax({
-                url: 'http://www.domain.tld/wp-json/jwt-auth/v1/token',
-                data: {
-                    username: 'user',
-                    password: 'password'
-                },
-                type: 'POST',
-                success: function (data) {
-                    console.log(data);
-                }
-            });
+        if (token) {
+            $('.form-getToken').hide();
+            renderPost(token, $("#getPost"));
+            insertPost(token, $("#wpInsertPost"));
+        }
+
+        $('#logout').click(function (e) {
+            window.localStorage.clear();
+            window.location.reload();
         });
 
         $('#titleNewPost').click(function (e) {
@@ -188,9 +241,6 @@
                 $(this).parent().addClass('top');
             }
         });
-
-        renderPost(token, $("#getPost"));
-        insertPost(token, $("#wpInsertPost"));
     };
 
     function onPause() {

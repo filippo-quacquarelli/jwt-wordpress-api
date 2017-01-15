@@ -5,7 +5,7 @@
         Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://www.domain.tld; media-src *">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://www.kessydish.com; media-src *">
         
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
@@ -16,7 +16,29 @@
     </head>
     <body>
         <div class="container">
-            <!--<button id="token">get token</button>-->
+            <div class="menu-header"><button id="logout" class="logout btn-default">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></button></div>
+            
+            <div class="form-getToken">
+
+                <form id="auth">
+                    <!-- url, username, pass -->
+                    <label>
+                        Domain
+                        <input type="url" name="domain" value="http://www.kessydish.com/wprest" />
+                    </label>
+
+                    <label>Username
+                        <input type="text" name="username" value="kessydish" />
+                    </label>
+
+                    <label>Password
+                        <input type="password" name="password" value="favAjF@&28sKp(%von$arc5D" />
+                    </label>
+
+                    <input type="submit" id="token" value="get token">
+                </form>
+            </div>
+
             <div class="getPost" id="getPost"></div>
 
             <div class="container-wpInsertPost" id="container-wpInsertPost">
